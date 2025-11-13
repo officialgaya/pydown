@@ -1,0 +1,46 @@
+// ==UserScript==
+// @name        Y2mate Converter Button
+// @namespace   https://www-y2mate.com/
+// @version     1.6
+// @date        2022-10-27
+// @author      A Koi
+// @description Y2mate Downloader: Download Video and Audio for free
+// @homepage    https://y2mate.com/
+// @icon        https://y2mate.com/themes/images/logo.png
+// @icon64      https://y2mate.com/themes/images/logo.png
+// @updateURL   https://www.y2mate.com/extensions/chrome/helper.meta.js
+// @downloadURL https://www.y2mate.com/extensions/chrome/helper.user.js
+// @include     http://*
+// @include     https://*
+// @run-at      document-end
+// @grant       GM_listValues
+// @grant       GM_setValue
+// @grant       GM_getValue
+// @grant       GM_deleteValue
+// @grant       GM_xmlhttpRequest
+// @grant       GM_info
+// @grant       GM_openInTab
+// @grant       GM_setClipboard
+// @grant       GM_registerMenuCommand
+// @grant       GM_unregisterMenuCommand
+// @grant       GM_notification
+// @grant       GM_download
+// @grant       GM.info
+// @grant       GM.listValues
+// @grant       GM.setValue
+// @grant       GM.getValue
+// @grant       GM.deleteValue
+// @grant       GM.openInTab
+// @grant       GM.setClipboard
+// @grant       GM.xmlHttpRequest
+// @connect     youtube.com
+// @connect     m.youtube.com
+// @connect     www.youtube.com
+// @connect     youtube-nocookie.com
+// @connect     youtu.be
+// @connect     wwwy2mate.com
+// @connect     self
+// @connect     *
+// ==/UserScript==
+var AKoiMain={oXHttpReq:null,vid:null,oldUrl:null,DocOnLoad:function(o,n,i="after"){try{var e,t,d;return null!=o&&null!=o.body&&null!=o.location&&(AKoiMain.vid=AKoiMain.getVid(o),AKoiMain.vid)&&(e=window.document.querySelector(n),t=window.document.querySelector("#y2mateconverter"),d=AKoiMain.GetCommandButton(),"#menu-container"!==n?"first-child"===i?e.insertBefore(d,e.firstChild):(null==t&&(null!=e?e.appendChild(d):(e=window.document.querySelector("#eow-title")).parentNode.insertBefore(d,e)),AKoiMain.oldUrl=window.location.href,AKoiMain.checkChangeVid()):(window.document.querySelector("#info-contents #info").setAttribute("style","flex-wrap: wrap;"),null==t&&(null!=e?e:e=window.document.querySelector("#eow-title")).parentNode.insertBefore(d,e),AKoiMain.oldUrl=window.location.href,AKoiMain.checkChangeVid())),!0}catch(o){console.log("Ошибка в функции Y2mate.DocOnLoad. ",o)}},checkChangeVid:function(){setTimeout(function(){AKoiMain.oldUrl==window.location.href?AKoiMain.checkChangeVid():AKoiMain.WaitLoadDom(window.document)},1e3)},WaitLoadDom:function(){AKoiMain.vid=AKoiMain.getVid(),AKoiMain.vid?null!=window.document.querySelector("#above-the-fold #actions-inner")?AKoiMain.DocOnLoad(window.document,"#actions-inner #menu #top-level-buttons-computed","first-child"):null!=window.document.querySelector("div.slim-video-action-bar-actions")?AKoiMain.DocOnLoad(window.document,"div.slim-video-action-bar-actions","first-child"):null!=window.document.querySelector("#above-the-fold #title")?AKoiMain.DocOnLoad(window.document,"#above-the-fold #title"):null!=window.document.querySelector("div.slim-video-information-title-and-badges")?AKoiMain.DocOnLoad(window.document,"div.slim-video-information-title-and-badges"):null!=window.document.querySelector("#menu-container")?AKoiMain.DocOnLoad(window.document,"#menu-container"):setTimeout(function(){AKoiMain.WaitLoadDom()},1e3):AKoiMain.checkChangeVid()},goToY2mate:function(o){try{var n="https://www-y2mate.com/search?q="+AKoiMain.vid+"&utm_source=chrome_addon";window.open(n,"_blank")}catch(o){console.log("Ошибка в функции Y2mate.OnButtonClick. ",o)}},GetCommandButton:function(){try{var o=document.createElement("button");return o.id="y2mateconverter",o.className="yt-uix-tooltip",o.setAttribute("type","button"),o.setAttribute("title","Download with y2mate.com"),o.innerHTML='<i style="position: absolute;display: inline-block;left: 10px;top: 12px;background-image: url(&quot;data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6Y2M9Imh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL25zIyIgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIiB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiIGlkPSJzdmcyIiB4bWw6c3BhY2U9InByZXNlcnZlIj48cGF0aCBkPSJNIDQsMCA0LDggMCw4IDgsMTYgMTYsOCAxMiw4IDEyLDAgNCwwIHoiIGZpbGw9IiNmZmZmZmYiIC8+PC9zdmc+&quot;);background-size: 12px;background-repeat: no-repeat;background-position: center center;width: 16px;height: 16px;"></i> Download',o.addEventListener("click",function(o){AKoiMain.goToY2mate(o)},!0),o.setAttribute("style","min-height:25px; position:relative; top:1px; cursor: pointer; font: 13px Arial; background: #c00; color: #fff; padding: 10px 16px 10px 32px; border-radius: 3px; font-weight:bold; border:none;"),o.setAttribute("onmouseover","this.style.backgroundColor='#ff003e'"),o.setAttribute("onmouseout","this.style.backgroundColor='#c00'"),o}catch(o){console.log("Ошибка в функции Y2mate.GetCommandButton. ",o)}},getVid:function(){var o=window.location.href.toString().match(/^.*((m\.)?youtu\.be\/|vi?\/|u\/\w\/|embed\/|\?vi?=|\&vi?=)([^#\&\?]*).*/);return!(!o||!o[3])&&o[3]}};
+AKoiMain.WaitLoadDom(window.document);

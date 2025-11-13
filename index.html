@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PulseTube Converter | Gayanath Madusankha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        :root {
+            --bg: #04050f;
+            --card: #0f172a;
+            --card-alt: #141f35;
+            --border: rgba(255, 255, 255, 0.08);
+            --highlight: #f72585;
+            --highlight-soft: rgba(247, 37, 133, 0.15);
+            --text: #f8fbff;
+            --muted: #9aa3c2;
+            --success: #1cc88a;
+            --error: #ff6b6b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top, #1c254a 0%, #050714 50%);
+            color: var(--text);
+            padding: clamp(20px, 3vw, 50px);
+        }
+
+        .hero {
+            max-width: 900px;
+            margin: 0 auto 24px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        .hero p {
+            margin: 0 auto;
+            max-width: 620px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: clamp(20px, 3vw, 34px);
+            box-shadow: 0 25px 60px rgba(3, 6, 24, 0.6);
+        }
+
+        .form-card {
+            max-width: 900px;
+            margin: 0 auto 24px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 250px;
+            padding: 16px 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--card-alt);
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--highlight);
+            box-shadow: 0 0 0 3px var(--highlight-soft);
+        }
+
+        button.primary {
+            padding: 16px 30px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(120deg, #f72585, #7209b7);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        button.primary:hover {
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 0 12px 30px rgba(247, 37, 133, 0.35);
+        }
+
+        button.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .message {
+            margin-top: 18px;
+            border-radius: 16px;
+            padding: 14px 16px;
+            border: 1px solid transparent;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        .message.visible {
+            display: block;
+        }
+
+        .message.success {
+            border-color: rgba(28, 200, 138, 0.5);
+            background: rgba(28, 200, 138, 0.12);
+            color: #9df3c4;
+        }
+
+        .message.error {
+            border-color: rgba(255, 107, 107, 0.5);
+            background: rgba(255, 107, 107, 0.12);
+            color: #ffb3b3;
+        }
+
+        .results-card {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: none;
+            gap: 24px;
+        }
+
+        .results-card.visible {
+            display: block;
+        }
+
+        .media-header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .media-header img {
+            width: 220px;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .media-details h2 {
+            margin: 0 0 8px;
+            font-size: clamp(1.4rem, 3vw, 2rem);
+        }
+
+        .media-meta {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .tabs {
+            display: inline-flex;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 26px;
+            color: var(--muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--highlight-soft);
+            color: var(--text);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-alt);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--muted);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        tr + tr {
+            border-top: 1px solid var(--border);
+        }
+
+        .quality-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .quality-sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .download-btn {
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: none;
+            background: var(--highlight);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+        }
+
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .convert-select {
+            width: 100%;
+            margin-bottom: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text);
+        }
+
+        .hint {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .loading-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(3, 5, 18, 0.82);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            z-index: 50;
+        }
+
+        .loading-modal.visible {
+            display: flex;
+        }
+
+        .loading-panel {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 28px;
+            width: min(360px, 90vw);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .loading-panel h4 {
+            margin: 0 0 8px;
+        }
+
+        .loading-panel p {
+            margin: 0 0 18px;
+            color: var(--muted);
+        }
+
+        .loading-bar {
+            position: relative;
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .loading-bar span {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, #f72585, #4cc9f0);
+            animation: pulse 1.3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translateX(-60%);
+            }
+            50% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(60%);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .media-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .media-header img {
+                width: 100%;
+                max-width: 420px;
+            }
+
+            .tabs {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            th, td {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body data-api-base="{{ request.url_root.rstrip('/') }}">
+    <section class="hero">
+        <h1>PulseTube Converter</h1>
+        <p>
+            Paste any YouTube link and instantly fetch video or audio qualities—just like the popular y2mate tools,
+            but self-hosted for your university project. Respect copyrights and only download what you’re allowed to use.
+        </p>
+    </section>
+
+    <section class="card form-card">
+        <form id="lookupForm">
+            <label for="mediaUrl">YouTube URL</label>
+            <div class="input-row">
+                <input type="text" id="mediaUrl" name="url" placeholder="https://www.youtube.com/watch?v=..." required>
+                <button class="primary" type="submit" id="analyzeBtn">Fetch Formats</button>
+            </div>
+        </form>
+        <div id="flashMessage" class="message"></div>
+    </section>
+
+    <section class="card results-card" id="resultsCard" hidden>
+        <div class="media-header">
+            <img src="" alt="Video thumbnail" id="videoThumb">
+            <div class="media-details">
+                <h2 id="videoTitle">Video title will appear here</h2>
+                <div class="media-meta" id="videoMeta"></div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="video">Video</button>
+            <button class="tab-btn" data-tab="audio">Audio</button>
+        </div>
+
+        <div class="tab-panel active" data-panel="video">
+            <table class="options-table">
+                <thead>
+                    <tr>
+                        <th>Quality</th>
+                        <th>Size</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="videoOptions"></tbody>
+            </table>
+            <p class="hint">Higher resolutions take longer to prepare. We automatically merge video and audio for you.</p>
+        </div>
+
+        <div class="tab-panel" data-panel="audio">
+            <table class="options-table">
+                <thead>
+                    <tr>
+                        <th>Bitrate</th>
+                        <th>Size</th>
+                        <th>Convert & Download</th>
+                    </tr>
+                </thead>
+                <tbody id="audioOptions"></tbody>
+            </table>
+            <p class="hint">Pick MP3 for the widest support or M4A for Apple devices. Downloads are saved server-side under <code>downloads/</code>.</p>
+        </div>
+    </section>
+
+    <div class="loading-modal" id="loadingPopup">
+        <div class="loading-panel">
+            <h4>Preparing your download…</h4>
+            <p id="loaderText">Sit tight while we contact YouTube.</p>
+            <div class="loading-bar">
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const getApiBase = () => {
+            const raw = (document.body?.dataset.apiBase || "").trim();
+            if (raw && !raw.includes("{{")) {
+                return raw.replace(/\/+$/, "");
+            }
+            const origin = window.location.origin || "";
+            if (origin.startsWith("http")) {
+                return origin.replace(/\/+$/, "");
+            }
+            return "http://127.0.0.1:5000";
+        };
+
+        const lookupForm = document.getElementById("lookupForm");
+        const urlInput = document.getElementById("mediaUrl");
+        const analyzeBtn = document.getElementById("analyzeBtn");
+        const flashMessage = document.getElementById("flashMessage");
+        const resultsCard = document.getElementById("resultsCard");
+        const videoTitle = document.getElementById("videoTitle");
+        const videoMeta = document.getElementById("videoMeta");
+        const videoThumb = document.getElementById("videoThumb");
+        const videoOptions = document.getElementById("videoOptions");
+        const audioOptions = document.getElementById("audioOptions");
+        const loader = document.getElementById("loadingPopup");
+        const loaderText = document.getElementById("loaderText");
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        const tabPanels = document.querySelectorAll(".tab-panel");
+        const API_BASE = getApiBase();
+
+        const state = {
+            currentUrl: "",
+            lastMetadata: null,
+            loaderStart: 0,
+            loaderMinDuration: 0
+        };
+
+        const updateMessage = (text = "", type = "success") => {
+            if (!flashMessage) {
+                return;
+            }
+            if (!text) {
+                flashMessage.className = "message";
+                flashMessage.textContent = "";
+                return;
+            }
+            flashMessage.textContent = text;
+            flashMessage.className = `message visible ${type === "error" ? "error" : "success"}`;
+        };
+
+        const showLoader = (text = "Working…", minMs = 0) => {
+            if (!loader) {
+                return;
+            }
+            state.loaderStart = Date.now();
+            state.loaderMinDuration = minMs;
+            if (loaderText) {
+                loaderText.textContent = text;
+            }
+            loader.classList.add("visible");
+        };
+
+        const hideLoader = () => {
+            if (!loader || !loader.classList.contains("visible")) {
+                return;
+            }
+            const elapsed = Date.now() - state.loaderStart;
+            const remaining = Math.max(0, state.loaderMinDuration - elapsed);
+            setTimeout(() => loader.classList.remove("visible"), remaining);
+        };
+
+        const renderPlaceholder = (tbody, text) => {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 3;
+            cell.style.textAlign = "center";
+            cell.style.color = "var(--muted)";
+            cell.textContent = text;
+            row.appendChild(cell);
+            tbody.appendChild(row);
+        };
+
+        const createFormatRow = (item, type) => {
+            const row = document.createElement("tr");
+
+            const qualityCell = document.createElement("td");
+            const qualityTitle = document.createElement("div");
+            qualityTitle.className = "quality-title";
+            qualityTitle.textContent = item.label || "Custom quality";
+            const qualitySub = document.createElement("div");
+            qualitySub.className = "quality-sub";
+            qualitySub.textContent = item.sub_label || "";
+            qualityCell.appendChild(qualityTitle);
+            qualityCell.appendChild(qualitySub);
+
+            const sizeCell = document.createElement("td");
+            sizeCell.textContent = item.size_label || "—";
+
+            const actionCell = document.createElement("td");
+            actionCell.className = "actions-cell";
+
+            let convertSelect = null;
+            if (type === "audio") {
+                convertSelect = document.createElement("select");
+                convertSelect.className = "convert-select";
+                const convertOptions = [
+                    { value: "mp3", label: "Convert to MP3 (popular)" },
+                    { value: "m4a", label: "Convert to M4A" },
+                    { value: "", label: `Keep original (${(item.ext || "").toUpperCase() || "source"})` }
+                ];
+                convertOptions.forEach((opt, index) => {
+                    const option = document.createElement("option");
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    if (index === 0) {
+                        option.selected = true;
+                    }
+                    convertSelect.appendChild(option);
+                });
+                actionCell.appendChild(convertSelect);
+            }
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "download-btn";
+            btn.dataset.formatId = item.format_id;
+            btn.dataset.sourceType = type;
+            btn.textContent = "Download";
+
+            actionCell.appendChild(btn);
+
+            row.appendChild(qualityCell);
+            row.appendChild(sizeCell);
+            row.appendChild(actionCell);
+
+            return row;
+        };
+
+        const renderFormats = (metadata) => {
+            resultsCard.hidden = false;
+            resultsCard.classList.add("visible");
+
+            videoTitle.textContent = metadata.title || "Untitled video";
+            const metaParts = [];
+            if (metadata.channel) {
+                metaParts.push(`Channel: ${metadata.channel}`);
+            }
+            if (metadata.duration_label) {
+                metaParts.push(`Duration: ${metadata.duration_label}`);
+            }
+            videoMeta.textContent = metaParts.join(" • ") || "No extra details found.";
+            if (metadata.thumbnail) {
+                videoThumb.src = metadata.thumbnail;
+                videoThumb.alt = metadata.title || "Video thumbnail";
+            }
+
+            videoOptions.innerHTML = "";
+            audioOptions.innerHTML = "";
+
+            if (metadata.video_formats?.length) {
+                metadata.video_formats.forEach((item) => {
+                    videoOptions.appendChild(createFormatRow(item, "video"));
+                });
+            } else {
+                renderPlaceholder(videoOptions, "No progressive video formats are available for this link.");
+            }
+
+            if (metadata.audio_formats?.length) {
+                metadata.audio_formats.forEach((item) => {
+                    audioOptions.appendChild(createFormatRow(item, "audio"));
+                });
+            } else {
+                renderPlaceholder(audioOptions, "Audio streams could not be loaded for this video.");
+            }
+        };
+
+        const fetchMetadata = async (url) => {
+            showLoader("Analyzing the link…", 600);
+            analyzeBtn.disabled = true;
+            try {
+                const response = await fetch(`${API_BASE}/api/info`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || "Unable to analyze this link.");
+                }
+
+                state.currentUrl = url;
+                state.lastMetadata = data;
+                renderFormats(data);
+                updateMessage("Formats ready. Pick the quality you need.", "success");
+            } catch (error) {
+                console.error(error);
+                const fallback = error instanceof TypeError
+                    ? "Cannot reach the backend. Make sure the Flask server is running."
+                    : (error.message || "Unable to analyze this video.");
+                updateMessage(fallback, "error");
+            } finally {
+                analyzeBtn.disabled = false;
+                hideLoader();
+            }
+        };
+
+        const startDownload = async (formatId, convertTo = "") => {
+            if (!state.currentUrl) {
+                updateMessage("Paste a link and fetch formats first.", "error");
+                return;
+            }
+
+            showLoader("Preparing your download…", 10000);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/download`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        url: state.currentUrl,
+                        format_id: formatId,
+                        convert_to: convertTo || null
+                    })
+                });
+
+                const data = await response.json();
+                if (!response.ok || data.error) {
+                    throw new Error(data.error || "Download failed.");
+                }
+
+                updateMessage(data.message || "Download finished.", "success");
+            } catch (error) {
+                console.error(error);
+                const fallback = error instanceof TypeError
+                    ? "Cannot reach the backend. Make sure the Flask server is running."
+                    : (error.message || "Unable to download right now.");
+                updateMessage(fallback, "error");
+            } finally {
+                hideLoader();
+            }
+        };
+
+        if (lookupForm) {
+            lookupForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+                const url = urlInput.value.trim();
+                if (!url) {
+                    updateMessage("Please paste a valid YouTube link.", "error");
+                    return;
+                }
+                updateMessage();
+                fetchMetadata(url);
+            });
+        }
+
+        document.body.addEventListener("click", (event) => {
+            const btn = event.target.closest(".download-btn");
+            if (!btn) {
+                return;
+            }
+            const formatId = btn.dataset.formatId;
+            const row = btn.closest("tr");
+            const convertSelect = row?.querySelector(".convert-select");
+            const convertTo = convertSelect ? convertSelect.value : "";
+
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = "Working…";
+
+            startDownload(formatId, convertTo).finally(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            });
+        });
+
+        tabButtons.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const target = btn.dataset.tab;
+                tabButtons.forEach((button) => button.classList.toggle("active", button === btn));
+                tabPanels.forEach((panel) => panel.classList.toggle("active", panel.dataset.panel === target));
+            });
+        });
+    </script>
+</body>
+</html>
